@@ -8,7 +8,7 @@ def homePage():
     return render_template(template_name_or_list=["homePage.html"])
 
 @app.route("/encodeUrl")
-def encodeAndSave(URL=""):
+def encodeUrl(URL=""):
     if url_validate(URL):
         pass
     else:
@@ -16,4 +16,4 @@ def encodeAndSave(URL=""):
 
 if __name__ == "__main__":
     app.run(debug=True)
-    helper = EncoderDecoder()
+    #helper = EncoderDecoder()
