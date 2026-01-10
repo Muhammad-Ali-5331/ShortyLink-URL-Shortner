@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request
+from flask import Flask, render_template, jsonify, request,redirect
 from validators import url as url_validate
 from HelperClass import EncoderDecoder
 
@@ -18,9 +18,17 @@ def encodeUrl():
         longUrl = 'https://' + longUrl
     if longUrl and url_validate(longUrl):
         shorten_url = helper.shortenUrl(longUrl)
-        return jsonify({'shortUrl':"https://shortlink.it/"+ shorten_url})
+        return jsonify({'shortUrl': "http://127.0.0.1:5000/" + shorten_url})
     else:
         return jsonify({'error': 'Invalid URL'}), 400
+
+@app.route("/<short_code>",methods=['GET'])
+def handleRedirect(short_code):
+    longUrl = helper.getLongUrl(short_code)
+    if longUrl:
+        return redirect(longUrl)
+    else:
+        return render_template("InvalidRequest.html")
 
 if __name__ == "__main__":
     app.run(debug=True)
