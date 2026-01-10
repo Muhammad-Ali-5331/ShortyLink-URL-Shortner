@@ -1,5 +1,6 @@
 from flask import Flask, render_template
 from validators import url as url_validate
+from HelperClass import EncoderDecoder
 
 app = Flask(__name__)
 @app.route('/')
@@ -15,3 +16,4 @@ def encodeAndSave(URL=""):
 
 if __name__ == "__main__":
     app.run(debug=True)
+    helper = EncoderDecoder
