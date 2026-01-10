@@ -14,7 +14,7 @@ class EncoderDecoder:
     def _getCode(self):
         return "".join(choice(self.__Alphabets) for _ in range(randint(self.__minLength,self.__maxLength)))
 
-    def encodeUrl(self,long_Url):
+    def shortenUrl(self, long_Url):
         short_code = self._getCode()
         while short_code in self.__MAP:
             short_code = self._getCode()
