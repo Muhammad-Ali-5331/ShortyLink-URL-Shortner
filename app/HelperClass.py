@@ -20,3 +20,6 @@ class EncoderDecoder:
             short_code = self._getCode()
         self.__MAP[short_code] = long_Url
         return short_code
+
+    def getLongUrl(self,shortUrl):
+        return self.__MAP.get(shortUrl)
