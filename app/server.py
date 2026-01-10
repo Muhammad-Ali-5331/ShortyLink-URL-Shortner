@@ -7,7 +7,7 @@ helper = EncoderDecoder()
 def homePage():
     return render_template(template_name_or_list=["homePage.html"])
 
-@app.route(path="/shorten",methods=['POST'])
+@app.route("/shorten",methods=['POST'])
 def encodeUrl(URL):
     if url_validate(URL):
         shorten_url = helper.shortenUrl(URL)
