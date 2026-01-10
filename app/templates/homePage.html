@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>ShortLink - Link Shortener Homepage</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "primary": "#135bec",
+              "background-light": "#f6f6f8",
+              "background-dark": "#101622",
+            },
+            fontFamily: {
+              "display": ["Inter", "sans-serif"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+</head>
+<body class="font-display bg-background-light dark:bg-background-dark">
+<div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
+<div class="layout-container flex h-full grow flex-col">
+<header class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 md:px-10 lg:px-20 py-4 border-b border-gray-200/80 dark:border-gray-800/80">
+<div class="flex items-center gap-3">
+<div class="size-6 text-primary">
+<svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
+</svg>
+</div>
+<h2 class="text-gray-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">ShortLink</h2>
+</div>
+</header>
+<main class="flex-1 px-4 py-10 sm:py-16 md:py-20 flex justify-center">
+<div class="flex flex-col w-full max-w-3xl">
+<div class="flex flex-col gap-8 text-center">
+<div class="flex flex-col gap-4">
+<h1 class="text-gray-900 dark:text-white text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tighter">Shorten Your Long Links Instantly</h1>
+<p class="text-gray-600 dark:text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">A simple and powerful tool to create clean, shareable links. Paste your URL below to get started.</p>
+</div>
+<div class="w-full max-w-2xl mx-auto">
+<label class="flex flex-col sm:flex-row min-w-40 h-auto sm:h-16 w-full">
+<div class="flex w-full flex-1 items-stretch rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
+<div class="text-gray-500 dark:text-gray-400 flex bg-white dark:bg-background-dark items-center justify-center pl-4 rounded-l-lg">
+<span class="material-symbols-outlined text-2xl">link</span>
+</div>
+<input class="form-input flex w-full min-w-0 flex-1 resize-none overflow-hidden text-gray-900 dark:text-white focus:outline-0 focus:ring-0 bg-white dark:bg-background-dark h-14 sm:h-full placeholder:text-gray-500 dark:placeholder:text-gray-500 px-4 text-base font-normal leading-normal border-0" placeholder="Enter your long URL here..." value=""/>
+<div class="flex items-center justify-center rounded-r-lg bg-white dark:bg-background-dark pr-2">
+<button class="flex min-w-[100px] sm:min-w-[140px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 sm:h-12 px-4 sm:px-5 bg-primary text-white text-sm sm:text-base font-bold leading-normal tracking-[0.015em] hover:bg-primary/90 transition-colors">
+<span class="truncate">Shorten Link</span>
+</button>
+</div>
+</div>
+</label>
+</div>
+</div>
+<div class="mt-12 w-full max-w-2xl mx-auto space-y-4">
+<div class="flex items-center justify-between gap-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/80 px-4 py-3 min-h-[72px] rounded-lg shadow-sm">
+<div class="flex items-center gap-4 overflow-hidden">
+<div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12">
+<span class="material-symbols-outlined text-2xl">content_cut</span>
+</div>
+<div class="flex flex-col justify-center overflow-hidden">
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">Your short link:</p>
+<p class="text-gray-400 dark:text-gray-500 text-base font-medium leading-normal truncate">Your link will appear here...</p>
+</div>
+</div>
+<div class="shrink-0">
+<button class="flex min-w-[84px] max-w-[480px] cursor-not-allowed items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-gray-100 dark:bg-gray-800 text-gray-400 dark:text-gray-500 text-sm font-medium leading-normal w-fit gap-2" disabled="">
+<span class="material-symbols-outlined text-lg">content_copy</span>
+<span class="truncate">Copy</span>
+</button>
+</div>
+</div>
+<p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal pb-3 pt-1 px-4 text-center">
+<a class="underline hover:text-primary dark:hover:text-primary/90 transition-colors" href="#">View Click Statistics →</a>
+</p>
+</div>
+</div>
+</main>
+</div>
+</div>
+</body></html>
