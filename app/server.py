@@ -14,7 +14,7 @@ db = SQLAlchemy(app)
 class Link(db.Model):
     short_code = db.Column(db.String(10), primary_key=True)
     long_url = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now())
+    created_at = db.Column(db.DateTime, default=datetime.now)
     clicks = db.Column(db.Integer, default=0)
 
 
