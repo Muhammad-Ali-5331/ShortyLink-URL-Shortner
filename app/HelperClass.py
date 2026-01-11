@@ -23,3 +23,10 @@ class EncoderDecoder:
 
     def getLongUrl(self,shortUrl):
         return self.__MAP.get(shortUrl)
+
+    def addLink(self,shortCode,longUrl):
+        self.__MAP[shortCode] = longUrl
+
+    def deleteLink(self,shorCode):
+        if shorCode in self.__MAP:
+            del self.__MAP[shorCode]
