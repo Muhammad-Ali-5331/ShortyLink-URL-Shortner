@@ -53,6 +53,13 @@ def encodeUrl():
 def handleRedirect(short_code):
     longUrl = helper.getLongUrl(short_code)
     if longUrl:
+        link_record = Link.query.get(short_code)
+
+        # Increment the counter
+        link_record.clicks += 1
+        # Save the change
+        db.session.commit()
+
         return redirect(longUrl)
     else:
         return render_template("InvalidRequest.html")
