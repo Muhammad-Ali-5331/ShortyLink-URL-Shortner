@@ -35,9 +35,9 @@ def encodeUrl():
     if longUrl and not longUrl.startswith(('http://', 'https://')):
         longUrl = 'https://' + longUrl
     if longUrl and url_validate(longUrl):
-        shorten_code = helper.shortenUrl(longUrl)
-        db.session.add(Link(shorten_code,longUrl))
-        return jsonify({'shortUrl': "http://127.0.0.1:5000/" + shorten_code})
+        shorten_url = helper.shortenUrl(longUrl)
+        db.session.add(Link(short_code=shorten_url,long_url=longUrl))
+        return jsonify({'shortUrl': "http://127.0.0.1:5000/" + shorten_url})
     else:
         return jsonify({'error': 'Invalid URL'}), 400
 
@@ -58,4 +58,6 @@ def delete_expired_links():
         db.session.commit()
 
 if __name__ == "__main__":
+    scheduler.init_app(app)  # Initialize the scheduler
+    scheduler.start()  # Start the background tasks
     app.run(debug=True)
