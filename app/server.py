@@ -11,10 +11,17 @@ app.config['SQLALCHEMY_DATABASE_VALUE'] = 'sqlite:///shorty.db'
 db = SQLAlchemy(app)
 db.init_app(app)
 
-with app.app_context():
-    db.create_all()
 
-helper = EncoderDecoder()
+def __updateHelper():
+    all_links = Link.query.all()
+    for link in all_links:
+        helper.addLink(link.short_code,link.long_url)
+
+with app.app_context():
+    helper = EncoderDecoder()
+    db.create_all()
+    __updateHelper()
+
 scheduler = APScheduler()
 
 class Link(db.Model):
@@ -37,6 +44,7 @@ def encodeUrl():
     if longUrl and url_validate(longUrl):
         shorten_url = helper.shortenUrl(longUrl)
         db.session.add(Link(short_code=shorten_url,long_url=longUrl))
+        db.session.commit()
         return jsonify({'shortUrl': "http://127.0.0.1:5000/" + shorten_url})
     else:
         return jsonify({'error': 'Invalid URL'}), 400
@@ -54,7 +62,9 @@ def handleRedirect(short_code):
 def delete_expired_links():
     with app.app_context():
         expiration_date = datetime.now() - timedelta(days=30)
-        Link.query.filter(Link.created_at < expiration_date).delete()
+        links_to_delete = Link.query.filter(Link.created_at < expiration_date)
+        for link in links_to_delete:
+            helper.deleteLink(link.short_code)
         db.session.commit()
 
 if __name__ == "__main__":
