@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request,redirect
+from flask import Flask, render_template, jsonify, request, redirect, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
 from validators import url as url_validate
@@ -33,6 +33,11 @@ scheduler = APScheduler()
 @app.route('/')
 def homePage():
     return render_template("homePage.html")
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route("/shorten",methods=['POST'])
 def encodeUrl():
