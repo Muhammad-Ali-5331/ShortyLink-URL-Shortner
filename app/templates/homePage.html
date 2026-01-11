@@ -248,6 +248,20 @@
       }
     });
   </script>
+  <script type="text/javascript">
+    const year = new Date().getFullYear();
+    document.addEventListener("DOMContentLoaded", function () {
+      const footer = document.querySelector("footer p");
+      if (footer) {
+        footer.innerHTML = `&copy; ${year} ShortyLinks. All rights reserved.`;
+      }
+    });
+  </script>
+  <footer class="py-6 px-10 text-center">
+    <p class="text-gray-500 dark:text-gray-600 text-sm">
+      &copy; ShortyLinks. All rights reserved.
+    </p>
+  </footer>
 </body>
 
 </html>
