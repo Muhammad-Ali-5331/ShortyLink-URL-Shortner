@@ -69,9 +69,10 @@ def handleRedirect(short_code):
 def delete_expired_links():
     with app.app_context():
         expiration_date = datetime.now() - timedelta(days=30)
-        links_to_delete = Link.query.filter(Link.created_at < expiration_date)
+        links_to_delete = Link.query.filter(Link.created_at < expiration_date).all()
         for link in links_to_delete:
-            helper.deleteLink(link.short_code)
+            helper.deleteLink(link.short_code) #Remove from HashMap
+            db.session.delete(link) #Remove from the Database
         db.session.commit()
 
 if __name__ == "__main__":
