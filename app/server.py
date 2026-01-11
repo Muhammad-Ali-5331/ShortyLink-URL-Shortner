@@ -7,9 +7,15 @@ from datetime import datetime,timedelta
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_VALUE'] = 'sqlite:///shorty.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shorty.db'
 db = SQLAlchemy(app)
-db.init_app(app)
+
+
+class Link(db.Model):
+    short_code = db.Column(db.String(10), primary_key=True)
+    long_url = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now())
+    clicks = db.Column(db.Integer, default=0)
 
 
 def __updateHelper():
@@ -23,12 +29,6 @@ with app.app_context():
     __updateHelper()
 
 scheduler = APScheduler()
-
-class Link(db.Model):
-    short_code = db.Column(db.String(10), primary_key=True)
-    long_url = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now())
-    clicks = db.Column(db.Integer, default=0)
 
 @app.route('/')
 def homePage():
