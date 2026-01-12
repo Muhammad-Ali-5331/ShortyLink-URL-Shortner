@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify, request,redirect
+from flask import Flask, render_template, jsonify, request, redirect, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_apscheduler import APScheduler
 from validators import url as url_validate
@@ -7,9 +7,15 @@ from datetime import datetime,timedelta
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_VALUE'] = 'sqlite:///shorty.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///shorty.db'
 db = SQLAlchemy(app)
-db.init_app(app)
+
+
+class Link(db.Model):
+    short_code = db.Column(db.String(10), primary_key=True)
+    long_url = db.Column(db.String(500), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.now)
+    clicks = db.Column(db.Integer, default=0)
 
 
 def __updateHelper():
@@ -24,15 +30,14 @@ with app.app_context():
 
 scheduler = APScheduler()
 
-class Link(db.Model):
-    short_code = db.Column(db.String(10), primary_key=True)
-    long_url = db.Column(db.String(500), nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.now())
-    clicks = db.Column(db.Integer, default=0)
-
 @app.route('/')
 def homePage():
     return render_template("homePage.html")
+
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(app.static_folder, 'favicon.ico', mimetype='image/vnd.microsoft.icon')
 
 @app.route("/shorten",methods=['POST'])
 def encodeUrl():
