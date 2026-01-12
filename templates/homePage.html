@@ -4,12 +4,19 @@
 <head>
   <meta charset="utf-8" />
   <meta content="width=device-width, initial-scale=1.0" name="viewport" />
-  <title>ShortLink - Short URL</title>
+  <title>ShortLink - Link Shortener</title>
   <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&display=swap" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap"
-    rel="stylesheet" />
-  <link rel="icon" type="image/x-icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+
+  <!-- Clerk JS SDK -->
+  <script
+  async
+  crossorigin="anonymous"
+  data-clerk-publishable-key="pk_test_Y29tcGxldGUtYmF0LTgzLmNsZXJrLmFjY291bnRzLmRldiQ"
+  src="https://complete-bat-83.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js"
+  type="text/javascript">
+</script>
   <script id="tailwind-config">
     tailwind.config = {
       darkMode: "class",
@@ -32,36 +39,53 @@
     .material-symbols-outlined {
       font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
     }
+
+    #userLinksSection {
+      display: none;
+    }
+
+    .link-card {
+      transition: all 0.2s ease;
+    }
+
+    .link-card:hover {
+      transform: translateY(-2px);
+    }
   </style>
 </head>
 
 <body class="font-display bg-background-light dark:bg-background-dark">
   <div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
     <div class="layout-container flex h-full grow flex-col">
-      <header
-  class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 md:px-10 lg:px-20 py-4 border-b border-gray-200/80 dark:border-gray-800/80">
+      <header class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 md:px-10 lg:px-20 py-4 border-b border-gray-200/80 dark:border-gray-800/80">
+        <a href="/" class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+          <div class="w-8 h-8 flex-shrink-0">
+            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" class="w-full h-full">
+              <path d="M0 0 C4.31633181 3.18586395 7.91120739 6.79612218 9.625 11.9375 C9.77010887 13.87135473 9.84573101 15.8109296 9.875 17.75 C9.90078125 18.76707031 9.9265625 19.78414062 9.953125 20.83203125 C9.07034977 29.1868682 2.97292537 33.94463776 -2.75 39.5 C-4.02617188 40.75586914 -4.02617188 40.75586914 -5.328125 42.03710938 C-7.67192448 44.34257568 -10.02308267 46.64032276 -12.375 48.9375 C-14.75343929 51.29371089 -17.11116515 53.6674277 -19.45068359 56.06225586 C-21.9194133 58.58916518 -24.39701445 61.10716935 -26.875 63.625 C-28.13763672 64.9253418 -28.13763672 64.9253418 -29.42578125 66.25195312 C-30.24433594 67.08017578 -31.06289063 67.90839844 -31.90625 68.76171875 C-32.64423828 69.51541748 -33.38222656 70.26911621 -34.14257812 71.0456543 C-39.17379211 75.30931103 -44.1607953 75.3194378 -50.50390625 75.1796875 C-56.11012352 74.7067821 -59.04722393 72.48891313 -62.6875 68.4375 C-65.99828686 64.47498344 -66.54785832 61.23563597 -66.625 56.125 C-66.66367188 54.59939453 -66.66367188 54.59939453 -66.703125 53.04296875 C-65.82034977 44.6881318 -59.72292537 39.93036224 -54 34.375 C-53.14921875 33.53775391 -52.2984375 32.70050781 -51.421875 31.83789062 C-49.07807552 29.53242432 -46.72691733 27.23467724 -44.375 24.9375 C-41.99656071 22.58128911 -39.63883485 20.2075723 -37.29931641 17.81274414 C-34.8305867 15.28583482 -32.35298555 12.76783065 -29.875 10.25 C-29.03324219 9.38310547 -28.19148438 8.51621094 -27.32421875 7.62304688 C-26.50566406 6.79482422 -25.68710937 5.96660156 -24.84375 5.11328125 C-24.10576172 4.35958252 -23.36777344 3.60588379 -22.60742188 2.8293457 C-16.34606797 -2.47678197 -7.54702835 -2.37591633 0 0 Z M-20.375 16.4375 C-20.95894531 17.05753906 -21.54289062 17.67757813 -22.14453125 18.31640625 C-23.57362832 19.8392146 -24.97701656 21.38607936 -26.375 22.9375 C-25.60542969 23.53304687 -24.83585937 24.12859375 -24.04296875 24.7421875 C-21.95607435 26.45936855 -20.3406646 27.96446387 -18.6875 30.0625 C-16.5143688 32.86999909 -16.5143688 32.86999909 -14.375 34.9375 C-12.18180765 32.96121678 -10.02374418 30.96116136 -7.875 28.9375 C-7.25496094 28.38449219 -6.63492188 27.83148438 -5.99609375 27.26171875 C-2.5994992 24.04968936 -2.5994992 24.04968936 -0.91601562 19.80273438 C-0.85292163 16.50081512 -1.16777094 14.28288176 -2.875 11.4375 C-10.46077224 6.88603665 -15.30331789 10.75106854 -20.375 16.4375 Z M-31.375 33.9375 C-30.32625002 36.55937494 -29.72568687 37.73121361 -27.25 39.1875 C-26.63125 39.435 -26.0125 39.6825 -25.375 39.9375 C-26.42374998 37.31562506 -27.02431313 36.14378639 -29.5 34.6875 C-30.428125 34.31625 -30.428125 34.31625 -31.375 33.9375 Z M-42.375 38.9375 C-44.56819235 40.91378322 -46.72625582 42.91383864 -48.875 44.9375 C-49.80505859 45.76701172 -49.80505859 45.76701172 -50.75390625 46.61328125 C-54.1505008 49.82531064 -54.1505008 49.82531064 -55.83398438 54.07226562 C-55.89707837 57.37418488 -55.58222906 59.59211824 -53.875 62.4375 C-50.40245526 64.52102684 -47.26959536 64.77485582 -43.375 63.9375 C-40.62574151 62.13626168 -38.55428593 59.8809418 -36.375 57.4375 C-35.79105469 56.81746094 -35.20710938 56.19742188 -34.60546875 55.55859375 C-33.17637168 54.0357854 -31.77298344 52.48892064 -30.375 50.9375 C-31.14457031 50.34195313 -31.91414063 49.74640625 -32.70703125 49.1328125 C-34.79392565 47.41563145 -36.4093354 45.91053613 -38.0625 43.8125 C-40.2356312 41.00500091 -40.2356312 41.00500091 -42.375 38.9375 Z " fill="#0077D3" transform="translate(76.375,11.0625)"/>
+              <path d="M0 0 C4.31633181 3.18586395 7.91120739 6.79612218 9.625 11.9375 C9.77010887 13.87135473 9.84573101 15.8109296 9.875 17.75 C9.90078125 18.76707031 9.9265625 19.78414062 9.953125 20.83203125 C9.33481055 26.6839359 6.35746418 30.58428023 2.28125 34.64453125 C1.44722656 35.47791016 0.61320312 36.31128906 -0.24609375 37.16992188 C-1.11363281 38.02134766 -1.98117188 38.87277344 -2.875 39.75 C-3.74253906 40.62076172 -4.61007813 41.49152344 -5.50390625 42.38867188 C-11.97410409 48.80386803 -11.97410409 48.80386803 -15.375 49.9375 C-17.33956318 37.79750702 -17.33956318 37.79750702 -14.09912109 33.08007812 C-11.88138785 30.67970803 -9.55331417 28.54129171 -6.99926758 26.50317383 C-3.56365361 23.77463531 -3.56365361 23.77463531 -1.93359375 19.85107422 C-1.89714104 16.96154605 -2.07190243 14.54369513 -3.375 11.9375 C-6.64364119 10.3031794 -9.8572894 10.24492301 -13.375 10.9375 C-16.02544899 12.62809181 -17.98417801 14.7840468 -20.0625 17.125 C-20.60455078 17.70314453 -21.14660156 18.28128906 -21.70507812 18.87695312 C-22.77127629 20.01517433 -23.82768693 21.16265607 -24.87329102 22.31982422 C-26.26993463 23.82432115 -27.76133299 25.23930049 -29.2578125 26.64453125 C-31.74346595 28.84728411 -31.74346595 28.84728411 -31.5625 32.4375 C-30.35674472 35.99130505 -30.05806364 36.45478268 -27.25 38.5 C-25.826875 39.7065625 -25.826875 39.7065625 -24.375 40.9375 C-24.30839283 44.26785861 -24.8340865 46.05495693 -26.5625 48.875 C-28.375 49.9375 -28.375 49.9375 -31.125 50.125 C-35.85889813 48.39530645 -38.67004547 45.14023927 -41.375 40.9375 C-42.23118507 37.81609388 -42.55502513 34.79300658 -42.625 31.5625 C-42.65078125 30.85351562 -42.6765625 30.14453125 -42.703125 29.4140625 C-41.55930831 20.7809699 -35.98256836 15.96833442 -30 10.125 C-29.14921875 9.26712891 -28.2984375 8.40925781 -27.421875 7.52539062 C-19.26390929 -0.54997885 -11.48117512 -3.61444402 0 0 Z " fill="#1A9CE1" transform="translate(76.375,11.0625)"/>
+              <path d="M0 0 C0.99 0 1.98 0 3 0 C2.979375 0.886875 2.95875 1.77375 2.9375 2.6875 C2.85688756 5.92399007 2.85688756 5.92399007 3.75 8.625 C3.8325 9.40875 3.915 10.1925 4 11 C2.68 12.32 1.36 13.64 0 15 C0 10.05 0 5.1 0 0 Z " fill="#1890D0" transform="translate(61,46)"/>
+              <path d="M0 0 C0.598125 0.226875 1.19625 0.45375 1.8125 0.6875 C0.8534375 1.80125 0.8534375 1.80125 -0.125 2.9375 C-1.97083407 5.3986121 -2.74819174 6.72216926 -3.1875 9.6875 C-4.1775 9.6875 -5.1675 9.6875 -6.1875 9.6875 C-5.58414218 3.29190714 -5.58414218 3.29190714 -3.875 0.6875 C-2.1875 -0.3125 -2.1875 -0.3125 0 0 Z " fill="#0170C5" transform="translate(50.1875,35.3125)"/>
+              <path d="M0 0 C0.99 0.33 1.98 0.66 3 1 C2.39873418 6.41139241 2.39873418 6.41139241 0.6875 8.9375 C-1 10 -1 10 -3.1875 9.6875 C-3.785625 9.460625 -4.38375 9.23375 -5 9 C-4.0409375 7.88625 -4.0409375 7.88625 -3.0625 6.75 C-1.21666593 4.2888879 -0.43930826 2.96533074 0 0 Z " fill="#1890D0" transform="translate(49,51)"/>
+            </svg>
+          </div>
+          <h2 class="text-gray-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">ShortLink</h2>
+        </a>
 
-  <a href="{{ url_for('homePage') }}"
-     class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+        <!-- Auth Buttons - Hidden when signed in -->
+        <div id="authButtons" class="flex items-center gap-4">
+          <button id="signInBtn" class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-semibold transition-colors px-3 py-2">Sign In</button>
+          <button id="signUpBtn" class="bg-primary text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-primary/90 transition-colors">Sign Up</button>
+        </div>
 
-    <img
-      src="{{ url_for('static', filename='icon.svg') }}"
-      alt="ShortLink Logo"
-      class="h-9 w-auto" />
-
-    <h2 class="text-gray-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">
-      ShortLink
-    </h2>
-
-  </a>
-</header>
+        <!-- User Button - Hidden when signed out -->
+        <div id="userButton" style="display: none;"></div>
+      </header>
 
       <main class="flex-1 px-4 py-10 sm:py-16 md:py-20 flex justify-center">
         <div class="flex flex-col w-full max-w-3xl">
           <div class="flex flex-col gap-8 text-center">
             <div class="flex flex-col gap-4">
-              <h1
-                class="text-gray-900 dark:text-white text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tighter">
+              <h1 class="text-gray-900 dark:text-white text-4xl sm:text-5xl md:text-6xl font-black leading-tight tracking-tighter">
                 Shorten Your Long Links Instantly</h1>
               <p class="text-gray-600 dark:text-gray-400 text-base sm:text-lg max-w-2xl mx-auto">A simple and powerful
                 tool to create clean, shareable links. Paste your URL below to get started.</p>
@@ -70,8 +94,7 @@
               <label class="flex flex-col sm:flex-row min-w-40 h-auto sm:h-16 w-full">
                 <div id="inputContainer"
                   class="flex w-full flex-1 items-stretch rounded-lg shadow-sm border border-gray-300 dark:border-gray-700 focus-within:ring-2 focus-within:ring-primary focus-within:border-primary transition-all">
-                  <div
-                    class="text-gray-500 dark:text-gray-400 flex bg-white dark:bg-background-dark items-center justify-center pl-4 rounded-l-lg">
+                  <div class="text-gray-500 dark:text-gray-400 flex bg-white dark:bg-background-dark items-center justify-center pl-4 rounded-l-lg">
                     <span class="material-symbols-outlined text-2xl">link</span>
                   </div>
                   <input id="urlInput"
@@ -87,19 +110,16 @@
               </label>
             </div>
           </div>
+
           <div class="mt-12 w-full max-w-2xl mx-auto space-y-4">
-            <div
-              class="flex items-center justify-between gap-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/80 px-4 py-3 min-h-[72px] rounded-lg shadow-sm">
+            <div class="flex items-center justify-between gap-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/80 px-4 py-3 min-h-[72px] rounded-lg shadow-sm">
               <div class="flex items-center gap-4 overflow-hidden">
-                <div
-                  class="text-primary flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12">
+                <div class="text-primary flex items-center justify-center rounded-lg bg-primary/10 dark:bg-primary/20 shrink-0 size-12">
                   <span class="material-symbols-outlined text-2xl">content_cut</span>
                 </div>
                 <div class="flex flex-col justify-center overflow-hidden">
                   <p class="text-gray-500 dark:text-gray-400 text-sm font-normal leading-normal">Your short link:</p>
-                  <p id="shortUrl"
-                    class="text-gray-400 dark:text-gray-500 text-base font-medium leading-normal truncate">Your link
-                    will appear here...</p>
+                  <p id="shortUrl" class="text-gray-400 dark:text-gray-500 text-base font-medium leading-normal truncate">Your link will appear here...</p>
                 </div>
               </div>
               <div class="shrink-0">
@@ -112,12 +132,104 @@
               </div>
             </div>
           </div>
+
+          <!-- User's Links Section (Only visible when signed in) -->
+          <div id="userLinksSection" class="mt-16 w-full max-w-2xl mx-auto">
+            <div class="flex items-center justify-between mb-6">
+              <h2 class="text-gray-900 dark:text-white text-2xl font-bold">Your Links</h2>
+              <span id="linkCount" class="text-gray-500 dark:text-gray-400 text-sm">0 links</span>
+            </div>
+
+            <div id="linksContainer" class="space-y-3">
+              <!-- Links will be dynamically inserted here -->
+            </div>
+
+            <div id="emptyState" class="text-center py-12">
+              <span class="material-symbols-outlined text-6xl text-gray-300 dark:text-gray-600">link_off</span>
+              <p class="text-gray-500 dark:text-gray-400 mt-4">No links yet. Create your first shortened link above!</p>
+            </div>
+          </div>
         </div>
       </main>
     </div>
   </div>
 
+  <footer class="py-6 px-10 text-center border-t border-gray-200/80 dark:border-gray-800/80">
+    <p class="text-gray-500 dark:text-gray-600 text-sm">
+      &copy; <span id="year"></span> ShortLink. All rights reserved.
+    </p>
+  </footer>
+
   <script>
+    // Set current year
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // Initialize Clerk
+    // REPLACE 'YOUR_PUBLISHABLE_KEY' with your actual Clerk publishable key
+    const clerkPublishableKey = 'pk_test_Y29tcGxldGUtYmF0LTgzLmNsZXJrLmFjY291bnRzLmRldiQ';
+    let clerk;
+    let currentUser = null;
+
+    async function initializeClerk() {
+  try {
+    // Wait for the Clerk script to finish loading onto the window
+    while (!window.Clerk) {
+      await new Promise(resolve => setTimeout(resolve, 100));
+    }
+
+    await window.Clerk.load();
+    clerk = window.Clerk; // Assign to your global variable
+
+    if (clerk.user) {
+      currentUser = clerk.user;
+      handleSignedIn();
+    } else {
+      handleSignedOut();
+    }
+  } catch (error) {
+    console.error('Error initializing Clerk:', error);
+  }
+}
+
+    function handleSignedIn() {
+  const authButtons = document.getElementById('authButtons');
+  const userButton = document.getElementById('userButton');
+  const userLinksSection = document.getElementById('userLinksSection');
+
+  if (authButtons) authButtons.style.display = 'none'; // Use style for consistency
+  if (userButton) {
+    userButton.style.display = 'block';
+    window.Clerk.mountUserButton(userButton);
+  }
+  if (userLinksSection) userLinksSection.style.display = 'block';
+
+  loadUserLinks();
+}
+
+function handleSignedOut() {
+  const authButtons = document.getElementById('authButtons');
+  const userButton = document.getElementById('userButton');
+  const userLinksSection = document.getElementById('userLinksSection');
+
+  if (authButtons) authButtons.style.display = 'flex';
+  if (userButton) userButton.style.display = 'none';
+  if (userLinksSection) userLinksSection.style.display = 'none';
+}
+
+    // Sign In button
+    document.getElementById('signInBtn').addEventListener('click', () => {
+      clerk.openSignIn();
+    });
+
+    // Sign Up button
+    document.getElementById('signUpBtn').addEventListener('click', () => {
+      clerk.openSignUp();
+    });
+
+    // Initialize Clerk on page load
+    initializeClerk();
+
+    // URL Shortening Logic
     const urlInput = document.getElementById('urlInput');
     const shortenBtn = document.getElementById('shortenBtn');
     const inputContainer = document.getElementById('inputContainer');
@@ -125,14 +237,14 @@
     const copyBtn = document.getElementById('copyBtn');
     let currentShortUrl = '';
 
-    // Function to call your backend API
     async function shortenUrl(longUrl) {
       try {
-        // REPLACE THIS URL WITH YOUR ACTUAL BACKEND ENDPOINT
         const response = await fetch('/shorten', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
+            // Include Clerk session token if signed in
+            ...(clerk.session && { 'Authorization': `Bearer ${await clerk.session.getToken()}` })
           },
           body: JSON.stringify({ url: longUrl })
         });
@@ -142,15 +254,12 @@
         }
 
         const data = await response.json();
-        // ADJUST THIS BASED ON YOUR BACKEND RESPONSE FORMAT
-        // Assuming your backend returns { shortUrl: "https://short.link/abc123" }
         return data.shortUrl;
       } catch (error) {
         throw error;
       }
     }
 
-    // Handle shorten button click
     shortenBtn.addEventListener('click', async () => {
       const url = urlInput.value.trim();
 
@@ -159,13 +268,17 @@
         return;
       }
 
-      // Show loading state
       shortenBtn.disabled = true;
       shortenBtn.innerHTML = '<span class="truncate">Shortening...</span>';
 
       try {
         const shortUrl = await shortenUrl(url);
         showSuccess(shortUrl);
+
+        // Reload user links if signed in
+        if (currentUser) {
+          loadUserLinks();
+        }
       } catch (error) {
         showError();
       } finally {
@@ -174,68 +287,45 @@
       }
     });
 
-    // Handle Enter key
     urlInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
         shortenBtn.click();
       }
     });
 
-    // Show success state
     function showSuccess(shortUrl) {
       currentShortUrl = shortUrl;
-
-      // Reset error state
       inputContainer.classList.remove('border-red-500', 'dark:border-red-500', 'ring-red-500');
       inputContainer.classList.add('border-green-500', 'dark:border-green-500', 'ring-2', 'ring-green-500');
-
-      // Update short URL display
       shortUrlDisplay.textContent = shortUrl;
       shortUrlDisplay.classList.remove('text-gray-400', 'dark:text-gray-500');
       shortUrlDisplay.classList.add('text-primary', 'dark:text-primary');
-
-      // Enable copy button
       copyBtn.disabled = false;
       copyBtn.classList.remove('cursor-not-allowed', 'bg-gray-100', 'dark:bg-gray-800', 'text-gray-400', 'dark:text-gray-500');
       copyBtn.classList.add('cursor-pointer', 'bg-primary', 'text-white', 'hover:bg-primary/90');
-
-      // Remove success border after 2 seconds
       setTimeout(() => {
         inputContainer.classList.remove('border-green-500', 'dark:border-green-500', 'ring-2', 'ring-green-500');
       }, 2000);
     }
 
-    // Show error state
     function showError() {
-      // Reset success state
       inputContainer.classList.remove('border-green-500', 'dark:border-green-500', 'ring-green-500');
-
-      // Add error state
       inputContainer.classList.add('border-red-500', 'dark:border-red-500', 'ring-2', 'ring-red-500');
-
-      // Reset short URL display
       shortUrlDisplay.textContent = 'Invalid URL. Please try again.';
       shortUrlDisplay.classList.remove('text-primary', 'dark:text-primary');
       shortUrlDisplay.classList.add('text-red-500', 'dark:text-red-400');
-
-      // Disable copy button
       currentShortUrl = '';
       copyBtn.disabled = true;
       copyBtn.classList.add('cursor-not-allowed', 'bg-gray-100', 'dark:bg-gray-800', 'text-gray-400', 'dark:text-gray-500');
       copyBtn.classList.remove('cursor-pointer', 'bg-primary', 'text-white', 'hover:bg-primary/90');
     }
 
-    // Handle copy button click
     copyBtn.addEventListener('click', async () => {
       if (!currentShortUrl) return;
-
       try {
         await navigator.clipboard.writeText(currentShortUrl);
-
-        // Show feedback
         const originalText = copyBtn.innerHTML;
         copyBtn.innerHTML = '<span class="material-symbols-outlined text-lg">check</span><span class="truncate">Copied!</span>';
-
         setTimeout(() => {
           copyBtn.innerHTML = originalText;
         }, 2000);
@@ -244,31 +334,147 @@
       }
     });
 
-    // Clear error state when user starts typing
     urlInput.addEventListener('input', () => {
       inputContainer.classList.remove('border-red-500', 'dark:border-red-500', 'ring-2', 'ring-red-500', 'border-green-500', 'dark:border-green-500', 'ring-green-500');
-
       if (shortUrlDisplay.classList.contains('text-red-500')) {
         shortUrlDisplay.textContent = 'Your link will appear here...';
         shortUrlDisplay.classList.remove('text-red-500', 'dark:text-red-400');
         shortUrlDisplay.classList.add('text-gray-400', 'dark:text-gray-500');
       }
     });
-  </script>
-  <script type="text/javascript">
-    const year = new Date().getFullYear();
-    document.addEventListener("DOMContentLoaded", function () {
-      const footer = document.querySelector("footer p");
-      if (footer) {
-        footer.innerHTML = `&copy; ${year} ShortyLinks. All rights reserved.`;
+
+    // Load user's links
+    async function loadUserLinks() {
+      try {
+        const response = await fetch('/api/user-links', {
+          headers: {
+            'Authorization': `Bearer ${await clerk.session.getToken()}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to load links');
+        }
+
+        const data = await response.json();
+        displayUserLinks(data.links);
+      } catch (error) {
+        console.error('Error loading user links:', error);
       }
-    });
+    }
+
+    function displayUserLinks(links) {
+      const linksContainer = document.getElementById('linksContainer');
+      const emptyState = document.getElementById('emptyState');
+      const linkCount = document.getElementById('linkCount');
+
+      if (!links || links.length === 0) {
+        linksContainer.innerHTML = '';
+        emptyState.style.display = 'block';
+        linkCount.textContent = '0 links';
+        return;
+      }
+
+      emptyState.style.display = 'none';
+      linkCount.textContent = `${links.length} link${links.length !== 1 ? 's' : ''}`;
+
+      linksContainer.innerHTML = links.map(link => `
+        <div class="link-card flex items-center justify-between gap-4 bg-white dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700/80 px-4 py-4 rounded-lg shadow-sm">
+          <div class="flex-1 overflow-hidden">
+            <div class="flex items-center gap-3 mb-2">
+              <a href="${link.shortUrl}" target="_blank" class="text-primary dark:text-primary font-semibold hover:underline truncate">
+                ${link.shortUrl}
+              </a>
+              <span class="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded">
+                ${link.clicks || 0} clicks
+              </span>
+            </div>
+            <p class="text-sm text-gray-500 dark:text-gray-400 truncate">${link.originalUrl}</p>
+            <p class="text-xs text-gray-400 dark:text-gray-500 mt-1">
+              Created ${formatDate(link.createdAt)}
+            </p>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button onclick="copyLink('${link.shortUrl}')" class="p-2 text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Copy">
+              <span class="material-symbols-outlined text-xl">content_copy</span>
+            </button>
+            <button onclick="deleteLink('${link.shortCode}')" class="p-2 text-gray-500 dark:text-gray-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors" title="Delete">
+              <span class="material-symbols-outlined text-xl">delete</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function formatDate(dateString) {
+      const date = new Date(dateString);
+      const now = new Date();
+      const diffMs = now - date;
+      const diffMins = Math.floor(diffMs / 60000);
+      const diffHours = Math.floor(diffMs / 3600000);
+      const diffDays = Math.floor(diffMs / 86400000);
+
+      if (diffMins < 1) return 'just now';
+      if (diffMins < 60) return `${diffMins} minute${diffMins !== 1 ? 's' : ''} ago`;
+      if (diffHours < 24) return `${diffHours} hour${diffHours !== 1 ? 's' : ''} ago`;
+      if (diffDays < 7) return `${diffDays} day${diffDays !== 1 ? 's' : ''} ago`;
+      return date.toLocaleDateString();
+    }
+
+    // Copy link function (global scope for onclick)
+    window.copyLink = async function(url) {
+      try {
+        await navigator.clipboard.writeText(url);
+        // Show toast notification
+        showToast('Link copied to clipboard!');
+      } catch (error) {
+        console.error('Failed to copy:', error);
+        showToast('Failed to copy link', 'error');
+      }
+    };
+
+    // Delete link function (global scope for onclick)
+    window.deleteLink = async function(shortCode) {
+      if (!confirm('Are you sure you want to delete this link?')) {
+        return;
+      }
+
+      try {
+        const response = await fetch(`/api/delete-link/${shortCode}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${await clerk.session.getToken()}`
+          }
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to delete link');
+        }
+
+        showToast('Link deleted successfully');
+        loadUserLinks(); // Reload the list
+      } catch (error) {
+        console.error('Error deleting link:', error);
+        showToast('Failed to delete link', 'error');
+      }
+    };
+
+    // Toast notification function
+    function showToast(message, type = 'success') {
+      const toast = document.createElement('div');
+      toast.className = `fixed bottom-4 right-4 px-6 py-3 rounded-lg shadow-lg text-white font-medium transition-all transform translate-y-0 ${
+        type === 'error' ? 'bg-red-500' : 'bg-green-500'
+      }`;
+      toast.textContent = message;
+      document.body.appendChild(toast);
+
+      setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
   </script>
-  <footer class="py-6 px-10 text-center">
-    <p class="text-gray-500 dark:text-gray-600 text-sm">
-      &copy; ShortyLinks. All rights reserved.
-    </p>
-  </footer>
 </body>
 
 </html>
