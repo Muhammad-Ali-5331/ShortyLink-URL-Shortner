@@ -39,16 +39,23 @@
   <div class="relative flex min-h-screen w-full flex-col group/design-root overflow-x-hidden">
     <div class="layout-container flex h-full grow flex-col">
       <header
-        class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 md:px-10 lg:px-20 py-4 border-b border-gray-200/80 dark:border-gray-800/80">
-        <div class="flex items-center gap-3">
-          <div class="size-6 text-primary">
-            <svg fill="none" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
-              <path d="M44 4H30.6666V17.3334H17.3334V30.6666H4V44H44V4Z" fill="currentColor"></path>
-            </svg>
-          </div>
-          <h2 class="text-gray-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">ShortLink</h2>
-        </div>
-      </header>
+  class="flex items-center justify-between whitespace-nowrap px-4 sm:px-6 md:px-10 lg:px-20 py-4 border-b border-gray-200/80 dark:border-gray-800/80">
+
+  <a href="{{ url_for('homePage') }}"
+     class="flex items-center gap-3 hover:opacity-80 transition-opacity">
+
+    <img
+      src="{{ url_for('static', filename='icon.svg') }}"
+      alt="ShortLink Logo"
+      class="h-9 w-auto" />
+
+    <h2 class="text-gray-900 dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">
+      ShortLink
+    </h2>
+
+  </a>
+</header>
+
       <main class="flex-1 px-4 py-10 sm:py-16 md:py-20 flex justify-center">
         <div class="flex flex-col w-full max-w-3xl">
           <div class="flex flex-col gap-8 text-center">
