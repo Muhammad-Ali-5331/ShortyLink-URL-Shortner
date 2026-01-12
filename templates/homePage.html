@@ -191,17 +191,30 @@
   }
 }
 
-    function handleSignedIn() {
+  function handleSignedIn() {
   const authButtons = document.getElementById('authButtons');
   const userButton = document.getElementById('userButton');
   const userLinksSection = document.getElementById('userLinksSection');
+  const shortenBtn = document.getElementById('shortenBtn');
+  const urlInput = document.getElementById('urlInput');
 
-  if (authButtons) authButtons.style.display = 'none'; // Use style for consistency
+  // 1. Toggle Header UI
+  if (authButtons) authButtons.style.display = 'none';
   if (userButton) {
     userButton.style.display = 'block';
     window.Clerk.mountUserButton(userButton);
   }
+
+  // 2. Show User History
   if (userLinksSection) userLinksSection.style.display = 'block';
+
+  // 3. Reset Button State for logged in users
+  if (shortenBtn) {
+    shortenBtn.innerHTML = '<span class="truncate">Shorten Link</span>';
+  }
+  if (urlInput) {
+    urlInput.placeholder = "Enter your long URL here...";
+  }
 
   loadUserLinks();
 }
@@ -210,10 +223,23 @@ function handleSignedOut() {
   const authButtons = document.getElementById('authButtons');
   const userButton = document.getElementById('userButton');
   const userLinksSection = document.getElementById('userLinksSection');
+  const shortenBtn = document.getElementById('shortenBtn');
+  const urlInput = document.getElementById('urlInput');
 
+  // 1. Toggle Header UI
   if (authButtons) authButtons.style.display = 'flex';
   if (userButton) userButton.style.display = 'none';
+
+  // 2. Hide User History
   if (userLinksSection) userLinksSection.style.display = 'none';
+
+  // 3. Update Button to reflect "Signup Required"
+  if (shortenBtn) {
+    shortenBtn.innerHTML = '<span class="truncate">Sign in to Shorten</span>';
+  }
+  if (urlInput) {
+    urlInput.placeholder = "Please sign in to shorten links...";
+  }
 }
 
     // Sign In button
@@ -238,54 +264,77 @@ function handleSignedOut() {
     let currentShortUrl = '';
 
     async function shortenUrl(longUrl) {
-      try {
-        const response = await fetch('/shorten', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            // Include Clerk session token if signed in
-            ...(clerk.session && { 'Authorization': `Bearer ${await clerk.session.getToken()}` })
-          },
-          body: JSON.stringify({ url: longUrl })
-        });
+  // 1. Double check session existence
+  if (!clerk.session) {
+    throw new Error('401'); // Pass a specific code so the listener knows to open Sign-in
+  }
 
-        if (!response.ok) {
-          throw new Error('Invalid URL or server error');
-        }
+  try {
+    // 2. Always get a fresh token
+    const token = await clerk.session.getToken();
 
-        const data = await response.json();
-        return data.shortUrl;
-      } catch (error) {
-        throw error;
-      }
+    const response = await fetch('/shorten', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ url: longUrl })
+    });
+
+    // 3. Handle non-OK responses (like 401, 403, or 500)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || `Server Error: ${response.status}`);
     }
 
-    shortenBtn.addEventListener('click', async () => {
-      const url = urlInput.value.trim();
+    const data = await response.json();
+    return data.shortUrl;
+  } catch (error) {
+    // Log the error for debugging and pass it up to the button listener
+    console.error("Shorten request failed:", error);
+    throw error;
+  }
+}
 
-      if (!url) {
-        showError();
-        return;
-      }
+   shortenBtn.addEventListener('click', async () => {
+  const url = urlInput.value.trim();
 
-      shortenBtn.disabled = true;
-      shortenBtn.innerHTML = '<span class="truncate">Shortening...</span>';
+  // 1. Basic validation
+  if (!url) {
+    showError("Please enter a URL");
+    return;
+  }
 
-      try {
-        const shortUrl = await shortenUrl(url);
-        showSuccess(shortUrl);
+  // 2. CHECK AUTH: If no user, open Sign-In and stop here
+  if (!window.Clerk.user) {
+    window.Clerk.openSignIn();
+    return;
+  }
 
-        // Reload user links if signed in
-        if (currentUser) {
-          loadUserLinks();
-        }
-      } catch (error) {
-        showError();
-      } finally {
-        shortenBtn.disabled = false;
-        shortenBtn.innerHTML = '<span class="truncate">Shorten Link</span>';
-      }
-    });
+  // 3. Proceed with shortening if logged in
+  shortenBtn.disabled = true;
+  shortenBtn.innerHTML = '<span class="truncate">Shortening...</span>';
+
+  try {
+    const shortUrl = await shortenUrl(url);
+    showSuccess(shortUrl);
+
+    // Reload list (we know currentUser exists now)
+    loadUserLinks();
+
+  } catch (error) {
+    // If the server returns a 401 specifically, open sign-in as a fallback
+    if (error.message.includes('401')) {
+      window.Clerk.openSignIn();
+    } else {
+      showError("Failed to shorten link.");
+    }
+  } finally {
+    shortenBtn.disabled = false;
+    shortenBtn.innerHTML = '<span class="truncate">Shorten Link</span>';
+  }
+});
 
     urlInput.addEventListener('keypress', (e) => {
       if (e.key === 'Enter') {
