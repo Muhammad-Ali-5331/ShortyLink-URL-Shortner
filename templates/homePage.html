@@ -178,7 +178,26 @@
     }
 
     await window.Clerk.load();
-    clerk = window.Clerk; // Assign to your global variable
+    clerk = window.Clerk;
+
+    try {
+      if (typeof clerk.__unstable_updateOriginalOptions === 'function') {
+        clerk.__unstable_updateOriginalOptions({
+          afterSignOutUrl: window.location.origin + '/' 
+        });
+      }
+    } catch (e) {
+      console.debug('Could not set afterSignOutUrl via unstable option, using event redirect fallback.', e);
+    }
+
+    clerk.addListener(({ user }) => {
+      if (!user) {
+        handleSignedOut();
+        if (window.location.pathname !== '/') {
+          window.location.assign('/');
+        }
+      }
+    });
 
     if (clerk.user) {
       currentUser = clerk.user;
